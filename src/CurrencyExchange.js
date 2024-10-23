@@ -19,7 +19,7 @@ const CurrencyExchange = ({ sellCurrency, buyCurrency, onRateChange }) => {
           buyCurrency = "USD"
         }
 
-        const url = `https://api.allorigins.win/get?url=https://www.google.com/search?q=${sellCurrency}+to+${buyCurrency}`;
+        const url = `https://www.google.com/search?q=${sellCurrency}+to+${buyCurrency}`;
         const { data } = await axios.get(url);
         const $ = load(data);
 
@@ -32,7 +32,7 @@ const CurrencyExchange = ({ sellCurrency, buyCurrency, onRateChange }) => {
 
           if (parsedRate < 0) {
             // Если курс меньше нуля, получаем курс от buyCurrency к sellCurrency
-            const reverseUrl = `https://api.allorigins.win/get?url=https://www.google.com/search?q=${buyCurrency}+to+${sellCurrency}`;
+            const reverseUrl = `https://www.google.com/search?q=${buyCurrency}+to+${sellCurrency}`;
             const reverseData = await axios.get(reverseUrl);
             const reverse$ = load(reverseData.data);
             const reverseRate = reverse$('span[data-precision]').first().text();
