@@ -43,7 +43,7 @@ const App = () => {
     tg?.sendData(JSON.stringify(adData));
     
     // Отправка данных на сервер
-    axios.post('https://your-server-url.com/api/create-ad', adData)
+    axios.post('http://45.15.159.209:5000/api/create-ad', adData)
       .then((response) => {
         console.log('Данные успешно отправлены на сервер:', response.data);
         alert('Объявление создано!');
