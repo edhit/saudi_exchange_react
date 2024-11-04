@@ -1,78 +1,28 @@
-import React, { useState, useEffect } from 'react';
+// src/components/CurrencyExchange.js
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { load } from 'cheerio';
-
-// https://cors.bridged.cc/
 
 const CurrencyExchange = ({ sellCurrency, buyCurrency, onRateChange }) => {
-  const [exchangeRate, setExchangeRate] = useState(null);
-  const [error, setError] = useState(null);
+  const [rate, setRate] = useState(null);
 
   useEffect(() => {
-    const getExchangeRate = async () => {
+    const fetchRate = async () => {
+      const baseCurrency = sellCurrency === 'usdt' ? 'usd' : sellCurrency;
       try {
-        if (sellCurrency === "USDT") {
-          sellCurrency = "USD"
-        }
-
-        if (buyCurrency === "USDT") {
-          buyCurrency = "USD"
-        }
-
-        const url = `https://www.google.com/search?q=${sellCurrency}+to+${buyCurrency}`;
-        const { data } = await axios.get(url);
-        const $ = load(data);
-
-        // Получаем курс
-        const rate = $('span[data-precision]').first().text();
-        
-        // Проверяем курс на меньше нуля
-        if (rate) {
-          const parsedRate = parseFloat(rate.replace(',', '.')); // Конвертируем строку в число
-
-          if (parsedRate < 0) {
-            // Если курс меньше нуля, получаем курс от buyCurrency к sellCurrency
-            const reverseUrl = `https://www.google.com/search?q=${buyCurrency}+to+${sellCurrency}`;
-            const reverseData = await axios.get(reverseUrl);
-            const reverse$ = load(reverseData.data);
-            const reverseRate = reverse$('span[data-precision]').first().text();
-
-            if (reverseRate) {
-              const parsedReverseRate = parseFloat(reverseRate.replace(',', '.'));
-              setExchangeRate(parsedReverseRate);
-              onRateChange(parsedReverseRate);
-            } else {
-              setError('Ошибка: курс не найден.');
-            }
-          } else {
-            setExchangeRate(parsedRate);
-            onRateChange(parsedRate);
-          }
-        } else {
-          setError('Ошибка: курс не найден.');
-        }
-      } catch (err) {
-        console.error('Ошибка при получении данных:', err);
-        setError('Ошибка при получении данных');
+        const response = await axios.get(`https://api.exchangerate-api.com/v4/latest/${baseCurrency}`);
+        const rate = response.data.rates[buyCurrency.toUpperCase()];
+        setRate(rate);
+        onRateChange(rate);
+      } catch (error) {
+        console.error("Error fetching exchange rate:", error);
       }
     };
-
-    getExchangeRate();
-  }, [sellCurrency, buyCurrency]);
+    fetchRate();
+  }, [sellCurrency, buyCurrency, onRateChange]);
 
   return (
-    <div className="currency-exchange-container">
-      {error && <p className="text-red-500">{error}</p>}
-      {exchangeRate && (
-        <div className="exchange-rate-card">
-          <p className="exchange-rate-title">
-            Курс {sellCurrency} к {buyCurrency}
-          </p>
-          <p className="exchange-rate-value">
-            <strong>{exchangeRate}</strong>
-          </p>
-        </div>
-      )}
+    <div className="text-gray-700">
+      <p>Курс: {rate ? rate.toFixed(2) : 'Загрузка...'}</p>
     </div>
   );
 };
