@@ -8,9 +8,10 @@ const CurrencyExchange = ({ sellCurrency, buyCurrency, onRateChange }) => {
   useEffect(() => {
     const fetchRate = async () => {
       const baseCurrency = sellCurrency === 'usdt' ? 'usd' : sellCurrency;
+      
       try {
         const response = await axios.get(`https://api.exchangerate-api.com/v4/latest/${baseCurrency}`);
-        const rate = response.data.rates[buyCurrency.toUpperCase()];
+        const rate = response.data.rates[(buyCurrency === 'usdt' ? 'usd' : buyCurrency).toUpperCase()];
         setRate(rate);
         onRateChange(rate);
       } catch (error) {
