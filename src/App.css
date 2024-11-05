@@ -38,6 +38,19 @@
 }
 
 
+/* сообщение скопировано */
+@keyframes fade-in-out {
+  0% { opacity: 0; transform: translateY(20px); }
+  10% { opacity: 1; transform: translateY(0); }
+  90% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(20px); }
+}
+
+.animate-fade-in-out {
+  animation: fade-in-out 3s ease-in-out;
+}
+
+/* курс валют */
 .currency-exchange-container {
   padding: 10px;
   border-radius: 8px;
@@ -67,5 +80,3 @@
   font-weight: bold; /* Полужирный шрифт */
   color: #333; /* Цвет текста значения */
 }
-
-
