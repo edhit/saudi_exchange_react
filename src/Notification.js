@@ -18,7 +18,7 @@ const Notification = ({ message, duration }) => {
     }, []);
   
     return (
-      <div className="fixed bottom-4 right-4 bg-black text-white px-4 py-2 rounded shadow-lg flex items-center space-x-2 animate-fade-in-out">
+      <div className="fixed bottom-4 left-4 right-4 bg-black text-white px-4 py-2 rounded shadow-lg flex items-center space-x-2 animate-fade-in-out">
         <span>{message}</span>
         <span className="text-gray-300">({secondsLeft}s)</span>
       </div>
