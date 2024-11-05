@@ -12,6 +12,7 @@ const AdForm = () => {
   const [comment, setComment] = useState("");
   const [exchangeMethod, setExchangeMethod] = useState([]);
   const [delivery, setDelivery] = useState("free");
+  const [generatedMessage, setGeneratedMessage] = useState('');
 
   const handleRateChange = (rate) => {
     setExchangeRate(rate);
@@ -37,45 +38,39 @@ const AdForm = () => {
     });
   };
 
-  const handleSubmit = () => {
+  const handleGenerateMessage = () => {
     const messageParts = [];
 
-    // Основное сообщение с валютой и суммой
     if (sellCurrency && buyCurrency) {
-      const amountPart = amount ? ` (${amount})` : "";
-      messageParts.push(
-        `Продам ${sellCurrency.toUpperCase()}${amountPart} за ваши ${buyCurrency.toUpperCase()}`
-      );
+      const amountPart = amount ? ` (${amount})` : '';
+      messageParts.push(`Продам ${sellCurrency.toUpperCase()}${amountPart} за ваши ${buyCurrency.toUpperCase()}`);
     }
 
-    // Геолокация
     if (cities.length > 0) {
-      messageParts.push(`📍 ${cities.join(", ")}`);
+      messageParts.push(`📍 ${cities.join(', ')}`);
     }
 
-    // Курс
     if (pricePerUnit) {
-      messageParts.push(`💵 Курс: ${pricePerUnit || exchangeRate.toFixed(2)}`);
+      messageParts.push(`💵 Курс: ${pricePerUnit}`);
     }
 
-    // Доставка
-    if (delivery !== "free") {
+    if (delivery !== 'free') {
       messageParts.push(`🚚 Доставка: ${delivery} SAR`);
     } else {
-      messageParts.push("🚚 Доставка: бесплатная");
+      messageParts.push('🚚 Доставка: бесплатная');
     }
 
-    // Комментарий (без заголовка)
     if (comment) {
       messageParts.push(comment);
     }
 
-    const formattedMessage = messageParts.join("\n");
-    const telegramUrl = `tg://msg_url?url=t.me/jdjdndjdjddnsnajoalancnc&text=${encodeURIComponent(
-      formattedMessage
-    )}`;
-    alert(telegramUrl);
-    window.open(telegramUrl, "_blank");
+    const formattedMessage = messageParts.join('\n');
+    setGeneratedMessage(formattedMessage);
+  };
+
+  const handleCopyToClipboard = () => {
+    navigator.clipboard.writeText(generatedMessage);
+    alert('Сообщение скопировано в буфер обмена!');
   };
 
   return (
@@ -210,11 +205,26 @@ const AdForm = () => {
         ></textarea>
 
         <button
-          onClick={handleSubmit}
-          className="w-full p-2 bg-blue-600 text-white rounded-lg"
+          onClick={handleGenerateMessage}
+          className="w-full mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
         >
-          Опубликовать
+          Сгенерировать сообщение
         </button>
+
+        {generatedMessage && (
+        <div className="mt-4">
+          <h3 className="font-bold mb-2">Предпросмотр сообщения:</h3>
+          <div className="p-3 bg-gray-100 rounded border">
+            <pre className="whitespace-pre-wrap">{generatedMessage}</pre>
+          </div>
+          <button
+            onClick={handleCopyToClipboard}
+            className="w-full mt-2 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+          >
+            Копировать сообщение
+          </button>
+        </div>
+      )}
       </div>
     </div>
   );
