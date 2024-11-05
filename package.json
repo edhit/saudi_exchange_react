@@ -1,6 +1,7 @@
 {
   "name": "telegram-currency-ad",
   "version": "0.1.0",
+  "homepage": "https://edhit.github.io/saudi_exchange_react",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
