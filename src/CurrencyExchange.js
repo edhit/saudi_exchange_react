@@ -11,7 +11,15 @@ const CurrencyExchange = ({ sellCurrency, buyCurrency, onRateChange }) => {
       
       try {
         const response = await axios.get(`https://api.exchangerate-api.com/v4/latest/${baseCurrency}`);
-        const rate = response.data.rates[(buyCurrency === 'usdt' ? 'usd' : buyCurrency).toUpperCase()];
+        let rate = response.data.rates[(buyCurrency === 'usdt' ? 'usd' : buyCurrency).toUpperCase()];
+
+        if (rate < 1) {
+          rate = 1 / rate;
+          rate = `1 ${buyCurrency.toUpperCase()} = ${rate.toFixed(2)} ${sellCurrency.toUpperCase()}`
+        } else {
+          rate = `1 ${sellCurrency.toUpperCase()} = ${rate.toFixed(2)} ${buyCurrency.toUpperCase()}`
+        }
+
         setRate(rate);
         onRateChange(rate);
       } catch (error) {
@@ -23,7 +31,7 @@ const CurrencyExchange = ({ sellCurrency, buyCurrency, onRateChange }) => {
 
   return (
     <div className="text-gray-700">
-      <p>Курс: {rate ? rate.toFixed(2) : 'Загрузка...'}</p>
+      <p>Курс: {rate ? rate : 'Загрузка...'}</p>
     </div>
   );
 };
