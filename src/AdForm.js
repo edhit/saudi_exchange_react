@@ -12,7 +12,7 @@ const AdForm = () => {
   const [, setExchangeRate] = useState(null);
   const [cities, setCities] = useState([]);
   const [comment, setComment] = useState("");
-  const [, setExchangeMethod] = useState([]);
+  const [exchangeMethod, setExchangeMethod] = useState([]);
   const [delivery, setDelivery] = useState("none");
   const [generatedMessage, setGeneratedMessage] = useState("");
   const [showNotification, setShowNotification] = useState(false); // копия во все проекты
@@ -70,6 +70,10 @@ const AdForm = () => {
 
     if (pricePerUnit) {
       messageParts.push(`💵 Курс: ${pricePerUnit}`);
+    }
+
+    if (exchangeMethod.length > 0) {
+      messageParts.push(`🔄 Обмен: ${exchangeMethod.join(', ')}`);
     }
 
     if (delivery === 'free') {
