@@ -120,7 +120,8 @@ const AdForm = () => {
 
   return (
     <div class="container mx-auto p-4">
-      <div className="p-4 max-w-md mx-auto bg-white rounded-lg" style={{ paddingBottom: `${paddingBottom}px` }}>
+      <div  style={{ paddingBottom: `${paddingBottom}px` }}>
+      <div className="p-4 max-w-md mx-auto bg-white rounded-lg">
         <h1 className="text-xl font-bold mb-4 text-center">🇸🇦 Обмен валюты в Саудии</h1>
 
       {/* Чекбоксы для приветствия */}
@@ -335,6 +336,7 @@ const AdForm = () => {
             duration={3000}
           />
         )}
+      </div>
       </div>
     </div>
   );
