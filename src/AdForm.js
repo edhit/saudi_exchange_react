@@ -17,6 +17,7 @@ const AdForm = () => {
   const [generatedMessage, setGeneratedMessage] = useState("");
   const [showNotification, setShowNotification] = useState(false); // копия во все проекты
   const previewRef = useRef(null);
+  const commentRef = useRef(null);
 
   const handleRateChange = (rate) => {
     setExchangeRate(rate);
@@ -88,6 +89,12 @@ const AdForm = () => {
     setTimeout(() => {
       setShowNotification(false);
     }, 3000); // Уведомление исчезает через 3 секунды
+  };
+
+  const handleFocus = () => {
+    setTimeout(() => {
+      commentRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 300); // Задержка для срабатывания после появления клавиатуры
   };
 
   return (
@@ -270,6 +277,8 @@ const AdForm = () => {
         <label className="block mb-2">Комментарий:</label>
         <textarea
           value={comment}
+          ref={commentRef}
+          onFocus={handleFocus}
           onChange={(e) => setComment(e.target.value)}
           className="block w-full mb-4 p-2 border rounded"
           placeholder="Ваш комментарий"
