@@ -1,5 +1,5 @@
 // src/components/AdForm.js
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import CurrencyExchange from "./CurrencyExchange";
 import Notification from "./Notification";
 
@@ -18,6 +18,14 @@ const AdForm = () => {
   const [showNotification, setShowNotification] = useState(false); // копия во все проекты
   const previewRef = useRef(null);
   const commentRef = useRef(null);
+  const [paddingBottom, setPaddingBottom] = useState(0);
+
+  useEffect(() => {
+    // Очистка стилей при размонтировании компонента
+    return () => {
+      setPaddingBottom(0);
+    };
+  }, []);
 
   const handleRateChange = (rate) => {
     setExchangeRate(rate);
@@ -92,14 +100,27 @@ const AdForm = () => {
   };
 
   const handleFocus = () => {
+    // Определение высоты видимой области и поля textarea
+    const textareaHeight = commentRef.current?.offsetHeight || 0;
+
+    // Установка отступа, чтобы поле не скрывалось клавиатурой
+    const keyboardHeightEstimate = window.innerHeight * 0.35; // Примерная высота клавиатуры (можно уточнить)
+    setPaddingBottom(keyboardHeightEstimate + textareaHeight);
+
+    // Прокрутка к полю
     setTimeout(() => {
       commentRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 300); // Задержка для срабатывания после появления клавиатуры
+    }, 300);
+  };
+
+  const handleBlur = () => {
+    // Сброс отступа при снятии фокуса с поля ввода
+    setPaddingBottom(0);
   };
 
   return (
     <div class="container mx-auto p-4">
-      <div className="p-4 max-w-md mx-auto bg-white rounded-lg">
+      <div className="p-4 max-w-md mx-auto bg-white rounded-lg" style={{ paddingBottom: `${paddingBottom}px` }}>
         <h1 className="text-xl font-bold mb-4 text-center">🇸🇦 Обмен валюты в Саудии</h1>
 
       {/* Чекбоксы для приветствия */}
@@ -279,6 +300,7 @@ const AdForm = () => {
           value={comment}
           ref={commentRef}
           onFocus={handleFocus}
+          onBlur={handleBlur}
           onChange={(e) => setComment(e.target.value)}
           className="block w-full mb-4 p-2 border rounded"
           placeholder="Ваш комментарий"
