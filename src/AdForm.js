@@ -81,7 +81,7 @@ const AdForm = () => {
           `Куплю ${amountPart}${sellCurrency.toUpperCase()} за ваши ${buyCurrency.toUpperCase()}`
         );
       } else if (transactionType === "Меняю") {
-        let message = `Меняю ${amountPart}${sellCurrency.toUpperCase()} на ${buyCurrency.toUpperCase()}`;
+        let message = `Меняю ${amountPart}${sellCurrency.toUpperCase()} на ваши ${buyCurrency.toUpperCase()}`;
         if (additionalCurrency) {
           messageParts.push(`${message},${additionalCurrency.toUpperCase()}`);
         } else {
