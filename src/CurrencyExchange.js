@@ -3,6 +3,7 @@ import axios from 'axios';
 
 const CurrencyExchange = ({ sellCurrency, buyCurrency, onRateChange }) => {
   const [rate, setRate] = useState(null);
+  const [link, setLink] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
 
   useEffect(() => {
@@ -14,9 +15,11 @@ const CurrencyExchange = ({ sellCurrency, buyCurrency, onRateChange }) => {
         if (rate < 1) {
           response = await axios.get(`https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/${buyCurrency}.json`);
           rate = response.data[buyCurrency][sellCurrency];
-          rate = `1 ${buyCurrency.toUpperCase()} = ${rate.toFixed(2)} ${sellCurrency.toUpperCase()}`;
+          rate = `1 ${buyCurrency.toUpperCase()} ~ ${rate.toFixed(2)} ${sellCurrency.toUpperCase()}`;
+          setLink(`https://www.google.com/search?q=1+${buyCurrency}+to+${sellCurrency}`)
         } else {
-          rate = `1 ${sellCurrency.toUpperCase()} = ${rate.toFixed(2)} ${buyCurrency.toUpperCase()}`;
+          rate = `1 ${sellCurrency.toUpperCase()} ~ ${rate.toFixed(2)} ${buyCurrency.toUpperCase()}`;
+          setLink(`https://www.google.com/search?q=1+${sellCurrency}+to+${buyCurrency}`)
         }
 
         setRate(rate);
@@ -39,17 +42,17 @@ const CurrencyExchange = ({ sellCurrency, buyCurrency, onRateChange }) => {
       <div className="flex items-center space-x-2">
         <p>Курс: {rate ? rate : 'Загрузка...'}</p>
         <button
-          className="text-xs bg-gray-200 hover:bg-gray-300 p-1 rounded"
+          className="text-xs bg-gray-200 hover:bg-gray-300 p-1 rounded mb-1"
           onClick={handleButtonClick}
         >
-          ⓘ
+          ⓘ Справка
         </button>
       </div>
 
       {/* Всплывающее сообщение */}
       {showPopup && (
         <div className="absolute bottom-0 right-0 mb-4 mr-4 p-2 bg-blue-100 border border-blue-300 text-blue-800 rounded shadow-md">
-          Курс обновляется раз в день
+          Курс взят из открытого источника, обновляется раз в день <br /><br /> <a href={ link } target="blank">Посмотреть в Google</a>
         </div>
       )}
     </div>
