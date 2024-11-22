@@ -42,7 +42,7 @@ const CurrencyExchange = ({ sellCurrency, buyCurrency, onRateChange }) => {
       <div className="flex items-center space-x-2">
         <p>Курс: {rate ? rate : 'Загрузка...'}</p>
         <button
-          className="text-xs border bg-gray-200 hover:bg-gray-300 p-1 rounded mb-1"
+          className="text-xs border-2 border-gray-300 bg-gray-200 hover:bg-gray-300 p-1 rounded mb-1"
           onClick={handleButtonClick}
         >
           ⓘ Справка
@@ -52,7 +52,7 @@ const CurrencyExchange = ({ sellCurrency, buyCurrency, onRateChange }) => {
       {/* Всплывающее сообщение */}
       {showPopup && (
         <div className="absolute bottom-0 right-0 mb-4 mr-4 p-2 bg-blue-100 border border-blue-300 text-blue-800 rounded shadow-md">
-          Курс взят из открытого источника, обновляется раз в день <br /><br /> <a href={ link } target="blank">Посмотреть в Google</a>
+          Курс взят из открытого источника, обновляется раз в день <br /><br /> <a href={ link } className="underline decoration-sky-900" target="blank">Посмотреть в Google</a>
         </div>
       )}
     </div>

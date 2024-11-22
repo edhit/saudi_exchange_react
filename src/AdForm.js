@@ -6,7 +6,7 @@ import Notification from "./Notification";
 const AdForm = () => {
   const [greeting, setGreeting] = useState("");
   const [transactionType, setTransactionType] = useState("Продам");
-  const [sellCurrency, setSellCurrency] = useState("usd");
+  const [sellCurrency, setSellCurrency] = useState("sar");
   const [buyCurrency, setBuyCurrency] = useState("rub");
   const [amount, setAmount] = useState("");
   const [rateOption, setRateOption] = useState("noRate");
@@ -218,7 +218,7 @@ const AdForm = () => {
 
           {/* Чекбоксы для приветствия */}
           <div className="mb-4">
-            <label className="block mb-2">Приветствие:</label>
+            <label className="block mb-2 font-semibold">Приветствие</label>
             <div className="flex flex-wrap gap-2">
               {[
                 { label: "السلام عليكم", value: "السلام عليكم" },
@@ -240,7 +240,7 @@ const AdForm = () => {
             </div>
           </div>
 
-          <div class="relative flex items-center mb-4">
+          <div class="relative flex items-center mb-6">
             <div class="flex-grow border-t border-gray-300"></div>
           </div>
 
@@ -256,7 +256,7 @@ const AdForm = () => {
                   className="hidden"
                 />
                 <span
-                  className={`px-4 py-2 rounded-lg cursor-pointer ${
+                  className={`px-6 py-3 text-xl rounded-lg cursor-pointer ${
                     transactionType === type
                       ? "bg-blue-500 text-white"
                       : "bg-gray-200 text-gray-700 hover:bg-gray-300"
@@ -320,7 +320,7 @@ const AdForm = () => {
           <div class="relative flex items-center mb-2">
             <div class="flex-grow border-t border-gray-300"></div>
             <span class="mx-4 text-gray-500">
-              Валюта {transactionType === "Куплю" ? "продажи" : "покупки"}
+              или (валюта {transactionType === "Куплю" ? "продажи" : "покупки"})
             </span>
             <div class="flex-grow border-t border-gray-300"></div>
           </div>
@@ -349,8 +349,8 @@ const AdForm = () => {
             ))}
           </div>
 
-          <label className="block mb-2">
-            Сумма {transactionType === "Куплю" ? "покупки" : "продажи"}:
+          <label className="block mb-2 font-semibold">
+            Сумма {transactionType === "Куплю" ? "покупки" : "продажи"}
           </label>
           <input
             type="number"
@@ -360,7 +360,7 @@ const AdForm = () => {
           />
 
           <div className="my-4">
-            <label className="block mb-2">Курс:</label>
+            <label className="block mb-2 font-semibold">Курс</label>
             <div className="flex flex-wrap gap-2">
               {[
                 { label: "Не указывать курс", value: "noRate" },
@@ -387,7 +387,7 @@ const AdForm = () => {
           {rateOption === "customRate" && (
             <div className="my-4 p-4 border-2 border-blue-500 bg-blue-100 rounded-lg">
               <label className="block text-blue-700 font-bold mb-2">
-                Цена за единицу (курс валют):
+                Цена за единицу (курс валют)
               </label>
               <CurrencyExchange
                 sellCurrency={sellCurrency}
@@ -404,7 +404,7 @@ const AdForm = () => {
             </div>
           )}
 
-          <label className="block mb-2">Город:</label>
+          <label className="block mb-2 font-semibold">Город</label>
           <div className="flex flex-wrap gap-2 mb-4">
             {["Медина", "Мекка", "Джидда", "Эр-Рияд"].map((city) => (
               <button
@@ -422,7 +422,7 @@ const AdForm = () => {
             ))}
           </div>
 
-          <label className="block mb-2">Способ обмена:</label>
+          <label className="block mb-2 font-semibold">Способ обмена</label>
           <div className="flex gap-2 mb-4">
             {["Перевод", "Наличка"].map((method) => (
               <button
@@ -440,7 +440,7 @@ const AdForm = () => {
             ))}
           </div>
 
-          <label className="block mt-2">Доставка:</label>
+          <label className="block mt-2 font-semibold">Доставка</label>
           <div className="flex flex-wrap gap-2 mt-1">
             <button
               type="button"
@@ -486,7 +486,7 @@ const AdForm = () => {
             )}
           </div>
 
-          <label className="block mt-2">Комментарий:</label>
+          <label className="block mt-2 font-semibold">Комментарий</label>
           <textarea
             value={comment}
             ref={commentRef}
@@ -494,7 +494,7 @@ const AdForm = () => {
             onBlur={handleBlur}
             onChange={(e) => setComment(e.target.value)}
             className="block w-full mb-4 p-2 border rounded"
-            placeholder="Подеду в любое удобное для вас место"
+            placeholder="Подъеду в любое удобное для вас место"
           ></textarea>
 
           <button
@@ -503,7 +503,7 @@ const AdForm = () => {
           >
             Сгенерировать сообщение
             {showTooltip && (
-              <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-sm px-3 py-1 rounded shadow-lg">
+              <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-base px-3 py-1 rounded shadow-lg">
                 Проверьте сообщение, скопируйте и вставьте в группу телеграмм
               </div>
             )}
@@ -512,13 +512,13 @@ const AdForm = () => {
           {/* Функция ввывода */}
           {generatedMessage && (
             <div className="mt-4" ref={previewRef}>
-              <h3 className="font-bold mb-2">Предпросмотр сообщения:</h3>
+              <h3 className="font-bold mb-2">Предпросмотр сообщения</h3>
               <div className="p-3 bg-gray-100 rounded border">
                 <pre className="whitespace-pre-wrap">{generatedMessage}</pre>
               </div>
               <div className="relative mt-4">
                 {showCopyHint && (
-                  <div className="absolute text-2xl left-1/2 transform -translate-x-1/2 -top-7 text-sm text-gray-600 animate-bounce-down">
+                  <div className="absolute text-4xl left-1/2 transform -translate-x-1/2 -top-7 text-sm text-gray-600 animate-bounce-down">
                     👇
                   </div>
                 )}
