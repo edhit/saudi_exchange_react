@@ -8,14 +8,17 @@ const AdForm = () => {
   const [transactionType, setTransactionType] = useState("Продам");
   const [sellCurrency, setSellCurrency] = useState("usd");
   const [buyCurrency, setBuyCurrency] = useState("rub");
-  const [additionalCurrency, setAdditionalCurrency] = useState("");
   const [amount, setAmount] = useState("");
+  const [rateOption, setRateOption] = useState("noRate");
   const [pricePerUnit, setPricePerUnit] = useState("");
   const [, setExchangeRate] = useState(null);
   const [cities, setCities] = useState([]);
   const [comment, setComment] = useState("");
   const [exchangeMethod, setExchangeMethod] = useState([]);
   const [delivery, setDelivery] = useState("none");
+  const [checkboxOptions, setCheckboxOptions] = useState([]); // Состояние для чекбоксов
+
+  const [isUrgent, setIsUrgent] = useState(false); // Состояние для кнопки "СРОЧНО"
   const [generatedMessage, setGeneratedMessage] = useState("");
   const [showNotification, setShowNotification] = useState(false); // копия во все проекты
   const [showTooltip, setShowTooltip] = useState(false); // подсказка
@@ -72,21 +75,25 @@ const AdForm = () => {
 
     if (sellCurrency && buyCurrency) {
       const amountPart = amount ? `${amount} ` : "";
+      const currencies = Object.keys(checkboxOptions)
+      let text = buyCurrency.toUpperCase()
+      for (let index = 0; index < currencies.length; index++) {
+        if (currencies[index] !== buyCurrency)
+        text = `${text}, ${currencies[index].toUpperCase()}`
+      }
+
       if (transactionType === "Продам") {
         messageParts.push(
-          `Продам ${amountPart}${sellCurrency.toUpperCase()} за ваши ${buyCurrency.toUpperCase()}`
+          `Продам ${amountPart}${sellCurrency.toUpperCase()} за ${text}`
         );
       } else if (transactionType === "Куплю") {
         messageParts.push(
-          `Куплю ${amountPart}${sellCurrency.toUpperCase()} за ваши ${buyCurrency.toUpperCase()}`
+          `Куплю ${amountPart}${sellCurrency.toUpperCase()} за ${text}`
         );
       } else if (transactionType === "Меняю") {
-        let message = `Меняю ${amountPart}${sellCurrency.toUpperCase()} на ваши ${buyCurrency.toUpperCase()}`;
-        if (additionalCurrency) {
-          messageParts.push(`${message},${additionalCurrency.toUpperCase()}`);
-        } else {
-          messageParts.push(`${message}`);
-        }
+        messageParts.push(
+          `Меняю ${amountPart}${sellCurrency.toUpperCase()} на ${text}`
+        );
       }
     }
 
@@ -94,8 +101,14 @@ const AdForm = () => {
       messageParts.push(`📍 ${cities.join(", ")}`);
     }
 
-    if (pricePerUnit) {
-      messageParts.push(`💵 Курс: ${pricePerUnit}`);
+    if (rateOption === "customRate") {
+      if (pricePerUnit) {
+        messageParts.push(`💵 Курс: ${pricePerUnit}`);
+      }
+    } else if (rateOption === "googleRate") {
+      messageParts.push(`💵 Курс Google`);
+    } else if (rateOption === "messageMe") {
+      messageParts.push(`💵 За курсом в ЛС`);
     }
 
     if (exchangeMethod.length > 0) {
@@ -110,6 +123,11 @@ const AdForm = () => {
 
     if (comment) {
       messageParts.push(comment);
+    }
+
+    if (isUrgent) {
+      messageParts.push('')
+      messageParts.push('🚨 Срочно!!!')
     }
 
     const formattedMessage = messageParts.join("\n");
@@ -163,6 +181,18 @@ const AdForm = () => {
     setPaddingBottom(0);
   };
 
+  const toggleCheckbox = (option) => {
+    setCheckboxOptions((prevState) => ({
+      ...prevState,
+      [option]: !prevState[option],
+    }));
+  };
+
+  // Функция для переключения "СРОЧНО ОБЪЯВЛЕНИЕ"
+  const handleUrgentToggle = () => {
+    setIsUrgent((prev) => !prev);
+  };
+
   return (
     <div class="container mx-auto p-4">
       <div style={{ paddingBottom: `${paddingBottom}px` }}>
@@ -171,40 +201,47 @@ const AdForm = () => {
             🇸🇦 Обмен валюты в Саудии
           </h1>
 
+          {/* Чекбокс "СРОЧНО ОБЪЯВЛЕНИЕ" */}
+          <div className="mb-4">
+            <button
+              type="button"
+              onClick={handleUrgentToggle}
+              className={`px-4 py-2 rounded-lg border-2 w-full ${
+                isUrgent
+                  ? "bg-red-500 text-white border-red-700"
+                  : "bg-gray-200 text-gray-700 hover:bg-gray-300 border-gray-300"
+              }`}
+            >
+              🚨 СРОЧНОЕ ОБЪЯВЛЕНИЕ
+            </button>
+          </div>
+
           {/* Чекбоксы для приветствия */}
           <div className="mb-4">
-            <label className="block font-bold mb-2">Приветствие:</label>
-            <label className="flex items-center">
-              <input
-                type="radio"
-                name="greeting"
-                value="السلام عليكم"
-                onChange={(e) => setGreeting(e.target.value)}
-                className="mr-2"
-              />
-              السلام عليكم
-            </label>
-            <label className="flex items-center mt-2">
-              <input
-                type="radio"
-                name="greeting"
-                value="السلام عليكم ورحمة الله وبركاته"
-                onChange={(e) => setGreeting(e.target.value)}
-                className="mr-2"
-              />
-              السلام عليكم ورحمة الله وبركاته
-            </label>
-            <label className="flex items-center mt-2">
-              <input
-                type="radio"
-                name="greeting"
-                value=""
-                onChange={(e) => setGreeting("")}
-                className="mr-2"
-                defaultChecked
-              />
-              Без приветствия
-            </label>
+            <label className="block mb-2">Приветствие:</label>
+            <div className="flex flex-wrap gap-2">
+              {[
+                { label: "السلام عليكم", value: "السلام عليكم" },
+                { label: "السلام عليكم ورحمة الله وبركاته", value: "السلام عليكم ورحمة الله وبركاته" },
+                { label: "Без приветствия", value: "Без приветствия" },
+              ].map((option) => (
+                <button
+                  key={option.value}
+                  onClick={() => setGreeting(option.value)}
+                  className={`px-4 py-2 rounded-lg ${
+                    greeting === option.value
+                      ? "bg-blue-500 text-white"
+                      : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                  }`}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div class="relative flex items-center mb-4">
+            <div class="flex-grow border-t border-gray-300"></div>
           </div>
 
           {/* Радиокнопки для выбора типа сделки */}
@@ -243,6 +280,7 @@ const AdForm = () => {
               >
                 <option value="usd">USD</option>
                 <option value="usdt">USDT</option>
+                <option value="eur">EUR</option>
                 <option value="rub">RUB</option>
                 <option value="kzt">KZT</option>
                 <option value="uzs">UZS</option>
@@ -270,6 +308,7 @@ const AdForm = () => {
               >
                 <option value="usd">USD</option>
                 <option value="usdt">USDT</option>
+                <option value="eur">EUR</option>
                 <option value="rub">RUB</option>
                 <option value="kzt">KZT</option>
                 <option value="uzs">UZS</option>
@@ -278,24 +317,37 @@ const AdForm = () => {
             </div>
           </div>
 
-          {transactionType === "Меняю" && (
-            <div className="mb-4">
-              <label className="block mb-2">Добавьте еще валюту</label>
-              <select
-                value={additionalCurrency}
-                onChange={(e) => setAdditionalCurrency(e.target.value)}
-                className="w-full p-2 border rounded"
+          <div class="relative flex items-center mb-2">
+            <div class="flex-grow border-t border-gray-300"></div>
+            <span class="mx-4 text-gray-500">
+              {transactionType === "Куплю" ? "покупка" : "продажа"}
+            </span>
+            <div class="flex-grow border-t border-gray-300"></div>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            {[
+              { label: "USD", value: "usd" },
+              { label: "USDT", value: "usdt" },
+              { label: "EUR", value: "eur" },
+              { label: "RUB", value: "rub" },
+              { label: "KZT", value: "kzt" },
+              { label: "UZS", value: "usz" },
+              { label: "SAR", value: "sar" },
+            ].map((option) => (
+              <button
+                key={option.value}
+                onClick={() => toggleCheckbox(option.value)}
+                className={`px-4 py-2 rounded-lg mb-2 ${
+                  checkboxOptions[option.value]
+                    ? "bg-blue-500 text-white"
+                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                }`}
               >
-                <option value=""></option>
-                <option value="usd">USD</option>
-                <option value="usdt">USDT</option>
-                <option value="rub">RUB</option>
-                <option value="kzt">KZT</option>
-                <option value="uzs">UZS</option>
-                <option value="sar">SAR</option>
-              </select>
-            </div>
-          )}
+                {option.label}
+              </button>
+            ))}
+          </div>
 
           <label className="block mb-2">
             Сумма {transactionType === "Куплю" ? "покупки" : "продажи"}:
@@ -307,107 +359,134 @@ const AdForm = () => {
             className="block w-full mb-4 p-2 border rounded"
           />
 
-          <label className="block mb-2">Цена за единицу (курс валют):</label>
-          <CurrencyExchange
-            sellCurrency={sellCurrency}
-            buyCurrency={buyCurrency}
-            onRateChange={handleRateChange}
-          />
-          <input
-            type="number"
-            value={pricePerUnit}
-            onChange={(e) => setPricePerUnit(e.target.value)}
-            // placeholder={exchangeRate?.toFixed(2) || "Загрузка..."}
-            className="block w-full mb-4 p-2 border rounded"
-          />
+          <div className="my-4">
+            <label className="block mb-2">Курс:</label>
+            <div className="flex flex-wrap gap-2">
+              {[
+                { label: "Не указывать курс", value: "noRate" },
+                { label: "Указать курс", value: "customRate" },
+                { label: "Курс Google", value: "googleRate" },
+                { label: "За курсом в ЛС", value: "messageMe" },
+              ].map((option) => (
+                <button
+                  key={option.value}
+                  onClick={() => setRateOption(option.value)}
+                  className={`px-4 py-2 rounded-lg ${
+                    rateOption === option.value
+                      ? "bg-blue-500 text-white"
+                      : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                  }`}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          </div>
 
-          <label className="block mb-2">Выбор города:</label>
-          <div className="mb-4 space-y-2">
-            {["Медина", "Мекка", "Джидда", "Эр-Рияд"].map((city) => (
-              <label key={city} className="flex items-center">
-                <input
-                  type="checkbox"
-                  value={city}
-                  onChange={() => handleCityCheckboxChange(city)}
-                  className="mr-2"
-                />
-                {city}
+          {/* Поле для указания курса (отображается, если выбрано "указать курс") */}
+          {rateOption === "customRate" && (
+            <div className="my-4 p-4 border-2 border-blue-500 bg-blue-100 rounded-lg">
+              <label className="block text-blue-700 font-bold mb-2">
+                Цена за единицу (курс валют):
               </label>
+              <CurrencyExchange
+                sellCurrency={sellCurrency}
+                buyCurrency={buyCurrency}
+                onRateChange={handleRateChange}
+              />
+              <input
+                type="number"
+                value={pricePerUnit}
+                onChange={(e) => setPricePerUnit(e.target.value)}
+                // placeholder={exchangeRate?.toFixed(2) || "Загрузка..."}
+                className="block w-full mb-4 p-2 border rounded"
+              />
+            </div>
+          )}
+
+          <label className="block mb-2">Город:</label>
+          <div className="flex flex-wrap gap-2 mb-4">
+            {["Медина", "Мекка", "Джидда", "Эр-Рияд"].map((city) => (
+              <button
+                key={city}
+                type="button"
+                onClick={() => handleCityCheckboxChange(city)}
+                className={`px-4 py-2 rounded-lg ${
+                  cities.includes(city)
+                    ? "bg-blue-500 text-white"
+                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                }`}
+              >
+                {city}
+              </button>
             ))}
           </div>
 
           <label className="block mb-2">Способ обмена:</label>
-          <div className="flex space-x-4 mb-4">
-            <label>
-              <input
-                type="checkbox"
-                onChange={() => handleExchangeMethodChange("Перевод")}
-              />{" "}
-              Перевод
-            </label>
-            <label>
-              <input
-                type="checkbox"
-                onChange={() => handleExchangeMethodChange("Наличка")}
-              />{" "}
-              Наличка
-            </label>
+          <div className="flex gap-2 mb-4">
+            {["Перевод", "Наличка"].map((method) => (
+              <button
+                key={method}
+                type="button"
+                onClick={() => handleExchangeMethodChange(method)}
+                className={`px-4 py-2 rounded-lg ${
+                  exchangeMethod.includes(method)
+                    ? "bg-blue-500 text-white"
+                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                }`}
+              >
+                {method}
+              </button>
+            ))}
           </div>
 
           <label className="block mt-2">Доставка:</label>
-          <div className="flex flex-col mt-1">
-            <label>
-              <input
-                type="radio"
-                name="delivery"
-                value="free"
-                checked={delivery === "free"}
-                onChange={() => setDelivery("free")}
-                className="mr-2"
-              />
+          <div className="flex flex-wrap gap-2 mt-1">
+            <button
+              type="button"
+              onClick={() => setDelivery("free")}
+              className={`px-4 py-2 rounded-lg ${
+                delivery === "free"
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              }`}
+            >
               Бесплатная
-            </label>
-            <label className="mt-2">
-              <input
-                type="radio"
-                name="delivery"
-                value="none"
-                checked={delivery === "none"}
-                onChange={() => setDelivery("none")}
-                className="mr-2"
-              />
+            </button>
+            <button
+              type="button"
+              onClick={() => setDelivery("none")}
+              className={`px-4 py-2 rounded-lg ${
+                delivery === "none"
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              }`}
+            >
               Без доставки
-            </label>
-            <label className="mt-2 flex items-start">
+            </button>
+            <button
+              type="button"
+              onClick={() => setDelivery("")}
+              className={`px-4 py-2 rounded-lg ${
+                delivery !== "free" && delivery !== "none"
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              }`}
+            >
+              Указать сумму
+            </button>
+            {delivery !== "free" && delivery !== "none" && (
               <input
-                type="radio"
-                name="delivery"
-                value="custom"
-                checked={delivery !== "free" && delivery !== "none"}
-                onChange={() => setDelivery("")}
-                className="mr-2"
+                type="number"
+                placeholder="Сумма"
+                value={delivery}
+                onChange={(e) => setDelivery(e.target.value)}
+                className="mt-2 p-2 border rounded w-full"
               />
-              <span className="flex flex-col">
-                <span>Указать сумму:</span>
-                {delivery !== "free" && delivery !== "none" && (
-                  <input
-                    type="number"
-                    placeholder="Сумма"
-                    value={
-                      delivery !== "free" && delivery !== "none" ? delivery : ""
-                    }
-                    onChange={(e) => setDelivery(e.target.value)}
-                    className="mt-1 border p-1 rounded w-full"
-                  />
-                )}
-                {delivery !== "free" && delivery !== "none" && (
-                  <span className="mt-1 text-sm text-gray-500">SAR</span>
-                )}
-              </span>
-            </label>
+            )}
           </div>
 
-          <label className="block mb-2">Комментарий:</label>
+          <label className="block mt-2">Комментарий:</label>
           <textarea
             value={comment}
             ref={commentRef}
@@ -415,7 +494,7 @@ const AdForm = () => {
             onBlur={handleBlur}
             onChange={(e) => setComment(e.target.value)}
             className="block w-full mb-4 p-2 border rounded"
-            placeholder="Ваш комментарий"
+            placeholder="Подеду в любое удобное для вас место"
           ></textarea>
 
           <button
@@ -439,7 +518,7 @@ const AdForm = () => {
               </div>
               <div className="relative mt-4">
                 {showCopyHint && (
-                  <div className="absolute text-4xl left-1/2 transform -translate-x-1/2 -top-7 text-sm text-gray-600 animate-bounce-down">
+                  <div className="absolute text-2xl left-1/2 transform -translate-x-1/2 -top-7 text-sm text-gray-600 animate-bounce-down">
                     👇
                   </div>
                 )}

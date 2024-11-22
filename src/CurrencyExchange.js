@@ -42,7 +42,7 @@ const CurrencyExchange = ({ sellCurrency, buyCurrency, onRateChange }) => {
       <div className="flex items-center space-x-2">
         <p>Курс: {rate ? rate : 'Загрузка...'}</p>
         <button
-          className="text-xs bg-gray-200 hover:bg-gray-300 p-1 rounded mb-1"
+          className="text-xs border bg-gray-200 hover:bg-gray-300 p-1 rounded mb-1"
           onClick={handleButtonClick}
         >
           ⓘ Справка

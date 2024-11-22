@@ -8,7 +8,7 @@ const App = () => {
   }, []);
 
   return (
-    <div className="bg-gray-100 flex items-center justify-center">
+    <div className="flex items-center justify-center">
       <AdForm />
     </div>
   );
