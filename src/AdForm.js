@@ -320,7 +320,7 @@ const AdForm = () => {
           <div class="relative flex items-center mb-2">
             <div class="flex-grow border-t border-gray-300"></div>
             <span class="mx-4 text-gray-500">
-              {transactionType === "Куплю" ? "покупка" : "продажа"}
+              Валюта {transactionType === "Куплю" ? "продажи" : "покупки"}
             </span>
             <div class="flex-grow border-t border-gray-300"></div>
           </div>
