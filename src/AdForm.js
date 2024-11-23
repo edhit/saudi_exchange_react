@@ -70,9 +70,11 @@ const AdForm = () => {
     if (sellCurrency && buyCurrency) {
       const amountPart = amount ? `${amount} ` : "";
       const currencies = Object.keys(checkboxOptions);
-      let text = buyCurrency.toUpperCase();
+      let text = ''
       for (let index = 0; index < currencies.length; index++) {
-        if (currencies[index] !== buyCurrency)
+        if (index === 0)
+          text = `${currencies[index].toUpperCase()}`;
+        else 
           text = `${text}, ${currencies[index].toUpperCase()}`;
       }
 
@@ -175,7 +177,7 @@ const AdForm = () => {
     setPaddingBottom(0);
   };
 
-  const toggleCheckbox = (option) => {
+  const toggleCheckbox = (option) => {  
     setCheckboxOptions((prevState) => {
       const updatedState = { ...prevState, [option]: !prevState[option] };
 
