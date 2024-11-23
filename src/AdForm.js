@@ -75,11 +75,11 @@ const AdForm = () => {
 
     if (sellCurrency && buyCurrency) {
       const amountPart = amount ? `${amount} ` : "";
-      const currencies = Object.keys(checkboxOptions)
-      let text = buyCurrency.toUpperCase()
+      const currencies = Object.keys(checkboxOptions);
+      let text = buyCurrency.toUpperCase();
       for (let index = 0; index < currencies.length; index++) {
         if (currencies[index] !== buyCurrency)
-        text = `${text}, ${currencies[index].toUpperCase()}`
+          text = `${text}, ${currencies[index].toUpperCase()}`;
       }
 
       if (transactionType === "Продам") {
@@ -126,8 +126,8 @@ const AdForm = () => {
     }
 
     if (isUrgent) {
-      messageParts.push('')
-      messageParts.push('🚨 Срочно!!!')
+      messageParts.push("");
+      messageParts.push("🚨 Срочно!!!");
     }
 
     const formattedMessage = messageParts.join("\n");
@@ -206,10 +206,10 @@ const AdForm = () => {
             <button
               type="button"
               onClick={handleUrgentToggle}
-              className={`px-4 py-2 rounded-lg border-2 w-full ${
+              className={`px-4 py-2 rounded-lg w-full ${
                 isUrgent
-                  ? "bg-red-500 text-white border-red-700"
-                  : "bg-gray-200 text-gray-700 hover:bg-gray-300 border-gray-300"
+                  ? "bg-red-500 text-white"
+                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
               }`}
             >
               🚨 СРОЧНОЕ ОБЪЯВЛЕНИЕ
@@ -222,8 +222,11 @@ const AdForm = () => {
             <div className="flex flex-wrap gap-2">
               {[
                 { label: "السلام عليكم", value: "السلام عليكم" },
-                { label: "السلام عليكم ورحمة الله وبركاته", value: "السلام عليكم ورحمة الله وبركاته" },
-                { label: "Без приветствия", value: "Без приветствия" },
+                {
+                  label: "السلام عليكم ورحمة الله وبركاته",
+                  value: "السلام عليكم ورحمة الله وبركاته",
+                },
+                { label: "Без приветствия", value: "" },
               ].map((option) => (
                 <button
                   key={option.value}
@@ -240,38 +243,48 @@ const AdForm = () => {
             </div>
           </div>
 
-          <div class="relative flex items-center mb-6">
+          <div class="relative flex items-center mb-4">
             <div class="flex-grow border-t border-gray-300"></div>
           </div>
 
           {/* Радиокнопки для выбора типа сделки */}
-          <div className="flex space-x-2 mb-4">
-            {["Продам", "Куплю", "Меняю"].map((type) => (
-              <label key={type}>
-                <input
-                  type="radio"
-                  value={type}
-                  checked={transactionType === type}
-                  onChange={() => setTransactionType(type)}
-                  className="hidden"
-                />
-                <span
-                  className={`px-6 py-3 text-xl rounded-lg cursor-pointer ${
-                    transactionType === type
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                  }`}
-                >
-                  {type}
-                </span>
-              </label>
-            ))}
+          <div className="overflow-x-auto py-3">
+            <div className="flex space-x-2 mb-4">
+              {["Продам", "Куплю", "Меняю"].map((type) => (
+                <label key={type}>
+                  <input
+                    type="radio"
+                    value={type}
+                    checked={transactionType === type}
+                    onChange={() => setTransactionType(type)}
+                    className="hidden"
+                  />
+                  <span
+                    className={`px-6 py-3 text-xl rounded-xl cursor-pointer ${
+                      transactionType === type
+                        ? type === "Продам"
+                          ? "bg-red-500 text-white"
+                          : type === "Куплю"
+                          ? "bg-green-500 text-white"
+                          : "bg-blue-500 text-white"
+                        : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                    }`}
+                  >
+                    {type}
+                  </span>
+                </label>
+              ))}
+            </div>
           </div>
 
           <div className="flex items-center mb-4">
             <div className="flex-1">
-              <label className="block text-sm font-medium mb-1">
-                Валюта {transactionType === "Куплю" ? "покупки" : "продажи"}
+              <label className="block text-lg font-bold mb-1">
+                {transactionType === "Куплю"
+                  ? "Куплю"
+                  : transactionType === "Продам"
+                  ? "Продам"
+                  : "Меняю"}
               </label>
               <select
                 value={sellCurrency}
@@ -291,15 +304,19 @@ const AdForm = () => {
             {/* Кнопка для смены валют */}
             <button
               onClick={swapCurrencies}
-              className="mx-2 p-2 bg-gray-200 hover:bg-gray-300 rounded-full text-sm flex items-center justify-center"
+              className="mx-2 p-2 mt-8 mx-8 bg-gray-200 hover:bg-gray-300 rounded-full text-sm flex items-center justify-center"
               aria-label="Поменять валюты местами"
             >
               🔁
             </button>
 
             <div className="flex-1">
-              <label className="block text-sm font-medium mb-1">
-                Валюта {transactionType === "Куплю" ? "продажи" : "покупки"}
+              <label className="block text-lg font-bold mb-1">
+                {transactionType === "Куплю"
+                  ? "за"
+                  : transactionType === "Продам"
+                  ? "за"
+                  : "на"}
               </label>
               <select
                 value={buyCurrency}
@@ -320,7 +337,12 @@ const AdForm = () => {
           <div class="relative flex items-center mb-2">
             <div class="flex-grow border-t border-gray-300"></div>
             <span class="mx-4 text-gray-500">
-              или (валюта {transactionType === "Куплю" ? "продажи" : "покупки"})
+              или{" "}
+              {transactionType === "Куплю"
+                ? "за"
+                : transactionType === "Продам"
+                ? "за"
+                : "на"}
             </span>
             <div class="flex-grow border-t border-gray-300"></div>
           </div>
@@ -332,7 +354,7 @@ const AdForm = () => {
               { label: "EUR", value: "eur" },
               { label: "RUB", value: "rub" },
               { label: "KZT", value: "kzt" },
-              { label: "UZS", value: "usz" },
+              { label: "UZS", value: "uzs" },
               { label: "SAR", value: "sar" },
             ].map((option) => (
               <button
@@ -350,7 +372,12 @@ const AdForm = () => {
           </div>
 
           <label className="block mb-2 font-semibold">
-            Сумма {transactionType === "Куплю" ? "покупки" : "продажи"}
+            Сумма{" "}
+            {transactionType === "Куплю"
+              ? "покупки"
+              : transactionType === "Продам"
+              ? "продажи"
+              : "обмена"}
           </label>
           <input
             type="number"
@@ -444,17 +471,6 @@ const AdForm = () => {
           <div className="flex flex-wrap gap-2 mt-1">
             <button
               type="button"
-              onClick={() => setDelivery("free")}
-              className={`px-4 py-2 rounded-lg ${
-                delivery === "free"
-                  ? "bg-blue-500 text-white"
-                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-              }`}
-            >
-              Бесплатная
-            </button>
-            <button
-              type="button"
               onClick={() => setDelivery("none")}
               className={`px-4 py-2 rounded-lg ${
                 delivery === "none"
@@ -463,6 +479,17 @@ const AdForm = () => {
               }`}
             >
               Без доставки
+            </button>
+            <button
+              type="button"
+              onClick={() => setDelivery("free")}
+              className={`px-4 py-2 rounded-lg ${
+                delivery === "free"
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              }`}
+            >
+              Бесплатная
             </button>
             <button
               type="button"
@@ -518,7 +545,7 @@ const AdForm = () => {
               </div>
               <div className="relative mt-4">
                 {showCopyHint && (
-                  <div className="absolute text-4xl left-1/2 transform -translate-x-1/2 -top-7 text-sm text-gray-600 animate-bounce-down">
+                  <div className="absolute text-3xl left-1/2 transform -translate-x-1/2 -top-7 text-sm text-gray-600 animate-bounce-down">
                     👇
                   </div>
                 )}
