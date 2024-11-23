@@ -59,12 +59,6 @@ const AdForm = () => {
     });
   };
 
-  // Функция для смены валют местами
-  const swapCurrencies = () => {
-    setSellCurrency(buyCurrency);
-    setBuyCurrency(sellCurrency);
-  };
-
   const handleGenerateMessage = () => {
     const messageParts = [];
 
@@ -112,7 +106,7 @@ const AdForm = () => {
     }
 
     if (exchangeMethod.length > 0) {
-      messageParts.push(`🔄 ${exchangeMethod.join(", ")}`);
+      messageParts.push(`🔄 Способ обмена: ${exchangeMethod.join(", ")}`);
     }
 
     if (delivery === "free") {
@@ -182,10 +176,22 @@ const AdForm = () => {
   };
 
   const toggleCheckbox = (option) => {
-    setCheckboxOptions((prevState) => ({
-      ...prevState,
-      [option]: !prevState[option],
-    }));
+    setCheckboxOptions((prevState) => {
+      const updatedState = { ...prevState, [option]: !prevState[option] };
+
+      // Удаляем из объекта те опции, которые стали "неактивными"
+      if (!updatedState[option]) {
+        delete updatedState[option];
+      }
+
+      if (updatedState[option]) {
+        setBuyCurrency(option);
+      }
+
+      return updatedState;
+    });
+
+    return checkboxOptions;
   };
 
   // Функция для переключения "СРОЧНО ОБЪЯВЛЕНИЕ"
@@ -243,107 +249,69 @@ const AdForm = () => {
             </div>
           </div>
 
-          <div class="relative flex items-center mb-4">
+          <div class="relative flex items-center mb-6">
             <div class="flex-grow border-t border-gray-300"></div>
           </div>
 
           {/* Радиокнопки для выбора типа сделки */}
-          <div className="overflow-x-auto py-3">
-            <div className="flex space-x-2 mb-4">
-              {["Продам", "Куплю", "Меняю"].map((type) => (
-                <label key={type}>
-                  <input
-                    type="radio"
-                    value={type}
-                    checked={transactionType === type}
-                    onChange={() => setTransactionType(type)}
-                    className="hidden"
-                  />
-                  <span
-                    className={`px-6 py-3 text-xl rounded-xl cursor-pointer ${
-                      transactionType === type
-                        ? type === "Продам"
-                          ? "bg-red-500 text-white"
-                          : type === "Куплю"
-                          ? "bg-green-500 text-white"
-                          : "bg-blue-500 text-white"
-                        : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                    }`}
-                  >
-                    {type}
-                  </span>
-                </label>
-              ))}
-            </div>
+          <div className="flex space-x-2 mb-6">
+            {["Продам", "Куплю"].map((type) => (
+              <label key={type} className="flex-1">
+                <input
+                  type="radio"
+                  value={type}
+                  checked={transactionType === type}
+                  onChange={() => setTransactionType(type)}
+                  className="hidden"
+                />
+                <span
+                  className={`block px-6 py-3 text-xl rounded-xl cursor-pointer w-full text-center ${
+                    transactionType === type
+                      ? type === "Продам"
+                        ? "bg-red-500 text-white"
+                        : type === "Куплю"
+                        ? "bg-green-500 text-white"
+                        : "bg-blue-500 text-white"
+                      : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                  }`}
+                >
+                  {type}
+                </span>
+              </label>
+            ))}
           </div>
 
           <div className="flex items-center mb-4">
             <div className="flex-1">
-              <label className="block text-lg font-bold mb-1">
-                {transactionType === "Куплю"
-                  ? "Куплю"
-                  : transactionType === "Продам"
-                  ? "Продам"
-                  : "Меняю"}
-              </label>
-              <select
-                value={sellCurrency}
-                onChange={(e) => setSellCurrency(e.target.value)}
-                className="p-2 border rounded w-full"
-              >
-                <option value="usd">USD</option>
-                <option value="usdt">USDT</option>
-                <option value="eur">EUR</option>
-                <option value="rub">RUB</option>
-                <option value="kzt">KZT</option>
-                <option value="uzs">UZS</option>
-                <option value="sar">SAR</option>
-              </select>
-            </div>
-
-            {/* Кнопка для смены валют */}
-            <button
-              onClick={swapCurrencies}
-              className="mx-2 p-2 mt-8 mx-8 bg-gray-200 hover:bg-gray-300 rounded-full text-sm flex items-center justify-center"
-              aria-label="Поменять валюты местами"
-            >
-              🔁
-            </button>
-
-            <div className="flex-1">
-              <label className="block text-lg font-bold mb-1">
-                {transactionType === "Куплю"
-                  ? "за"
-                  : transactionType === "Продам"
-                  ? "за"
-                  : "на"}
-              </label>
-              <select
-                value={buyCurrency}
-                onChange={(e) => setBuyCurrency(e.target.value)}
-                className="p-2 border rounded w-full"
-              >
-                <option value="usd">USD</option>
-                <option value="usdt">USDT</option>
-                <option value="eur">EUR</option>
-                <option value="rub">RUB</option>
-                <option value="kzt">KZT</option>
-                <option value="uzs">UZS</option>
-                <option value="sar">SAR</option>
-              </select>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { label: "USD", value: "usd" },
+                  { label: "USDT", value: "usdt" },
+                  { label: "EUR", value: "eur" },
+                  { label: "RUB", value: "rub" },
+                  { label: "KZT", value: "kzt" },
+                  { label: "UZS", value: "uzs" },
+                  { label: "SAR", value: "sar" },
+                ].map((option) => (
+                  <button
+                    key={option.value}
+                    onClick={() => setSellCurrency(option.value)}
+                    className={`px-4 py-2 rounded-lg ${
+                      sellCurrency === option.value
+                        ? "bg-blue-500 text-white"
+                        : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                    }`}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
           <div class="relative flex items-center mb-2">
             <div class="flex-grow border-t border-gray-300"></div>
-            <span class="mx-4 text-gray-500">
-              или{" "}
-              {transactionType === "Куплю"
-                ? "за"
-                : transactionType === "Продам"
-                ? "за"
-                : "на"}
-            </span>
+            <span class="mx-4 text-gray-500">за</span>
             <div class="flex-grow border-t border-gray-300"></div>
           </div>
 
@@ -500,7 +468,7 @@ const AdForm = () => {
                   : "bg-gray-200 text-gray-700 hover:bg-gray-300"
               }`}
             >
-              Указать сумму
+              Указать сумму (SAR)
             </button>
             {delivery !== "free" && delivery !== "none" && (
               <input
