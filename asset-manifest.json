@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/saudi_exchange_react/static/css/main.19a566ab.css",
-    "main.js": "/saudi_exchange_react/static/js/main.ab6ba691.js",
-    "static/js/453.64fa2808.chunk.js": "/saudi_exchange_react/static/js/453.64fa2808.chunk.js",
+    "main.css": "/saudi_exchange_react/static/css/main.f60c4976.css",
+    "main.js": "/saudi_exchange_react/static/js/main.b2b61ce0.js",
+    "static/js/453.10aa7e26.chunk.js": "/saudi_exchange_react/static/js/453.10aa7e26.chunk.js",
     "index.html": "/saudi_exchange_react/index.html",
-    "main.19a566ab.css.map": "/saudi_exchange_react/static/css/main.19a566ab.css.map",
-    "main.ab6ba691.js.map": "/saudi_exchange_react/static/js/main.ab6ba691.js.map",
-    "453.64fa2808.chunk.js.map": "/saudi_exchange_react/static/js/453.64fa2808.chunk.js.map"
+    "main.f60c4976.css.map": "/saudi_exchange_react/static/css/main.f60c4976.css.map",
+    "main.b2b61ce0.js.map": "/saudi_exchange_react/static/js/main.b2b61ce0.js.map",
+    "453.10aa7e26.chunk.js.map": "/saudi_exchange_react/static/js/453.10aa7e26.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.19a566ab.css",
-    "static/js/main.ab6ba691.js"
+    "static/css/main.f60c4976.css",
+    "static/js/main.b2b61ce0.js"
   ]
 }
