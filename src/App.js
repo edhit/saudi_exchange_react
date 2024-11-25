@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { PlusCircleIcon, GlobeAltIcon } from "@heroicons/react/24/outline"; // Импорт иконок
+import { PlusCircleIcon, UserGroupIcon } from "@heroicons/react/24/outline"; // Импорт иконок
 import AdForm from "./AdForm";
 
 const App = () => {
@@ -31,8 +31,8 @@ const App = () => {
           onClick={() => handleTabChange("home")}
         />
         <MenuButton
-          label="Ссылка"
-          Icon={GlobeAltIcon}
+          label="Группы"
+          Icon={UserGroupIcon}
           active={activeTab === "external"}
           onClick={() => handleTabChange("external")}
         />
