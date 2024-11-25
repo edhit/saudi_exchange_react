@@ -15,7 +15,7 @@ const App = () => {
   };
 
   return (
-    <div className="flex flex-col mb-16">
+    <div className="bg-white flex flex-col mb-16">
       {/* Основной контент */}
       <div className="flex-grow overflow-auto">
         {activeTab === "home" && <AdForm />}
