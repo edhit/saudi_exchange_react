@@ -202,19 +202,23 @@ const AdForm = () => {
   };
 
   return (
-    <div class="container mx-auto p-4">
+    <div class="container mx-auto">
       <div style={{ paddingBottom: `${paddingBottom}px` }}>
-        <div className="p-4 max-w-md mx-auto bg-white rounded-lg">
-          <h1 className="text-xl font-bold mb-4 text-center">
-            🇸🇦 Обмен валюты в Саудии
-          </h1>
+      <div className="max-w-md mx-auto bg-white rounded-xl mb-4">
+
+      <h1 className="block bg-gray-100 p-4 text-xl border border-b-1 text-center font-bold mb-1">
+      🇸🇦 Обмен валюты в Саудии
+      </h1>
+          </div>
+        
+        <div className="p-4 pt-0 max-w-md mx-auto bg-white rounded-xl">
 
           {/* Чекбокс "СРОЧНО ОБЪЯВЛЕНИЕ" */}
           <div className="mb-4">
             <button
               type="button"
               onClick={handleUrgentToggle}
-              className={`px-4 py-2 rounded-lg w-full ${
+              className={`px-4 py-2 rounded-xl w-full ${
                 isUrgent
                   ? "bg-red-500 text-white"
                   : "bg-gray-200 text-gray-700 hover:bg-gray-300"
@@ -225,7 +229,7 @@ const AdForm = () => {
           </div>
 
           {/* Чекбоксы для приветствия */}
-          <div className="mb-4">
+          <div className="mb-6">
             <label className="block mb-2 font-semibold">Приветствие</label>
             <div className="flex flex-wrap gap-2">
               {[
@@ -239,7 +243,7 @@ const AdForm = () => {
                 <button
                   key={option.value}
                   onClick={() => setGreeting(option.value)}
-                  className={`px-4 py-2 rounded-lg ${
+                  className={`px-4 py-2 rounded-xl ${
                     greeting === option.value
                       ? "bg-blue-500 text-white"
                       : "bg-gray-200 text-gray-700 hover:bg-gray-300"
@@ -249,10 +253,6 @@ const AdForm = () => {
                 </button>
               ))}
             </div>
-          </div>
-
-          <div class="relative flex items-center mb-6">
-            <div class="flex-grow border-t border-gray-300"></div>
           </div>
 
           {/* Радиокнопки для выбора типа сделки */}
@@ -298,7 +298,7 @@ const AdForm = () => {
                   <button
                     key={option.value}
                     onClick={() => setSellCurrency(option.value)}
-                    className={`px-4 py-2 rounded-lg ${
+                    className={`px-4 py-2 rounded-xl ${
                       sellCurrency === option.value
                         ? "bg-blue-500 text-white"
                         : "bg-gray-200 text-gray-700 hover:bg-gray-300"
@@ -330,7 +330,7 @@ const AdForm = () => {
               <button
                 key={option.value}
                 onClick={() => toggleCheckbox(option.value)}
-                className={`px-4 py-2 rounded-lg mb-2 ${
+                className={`px-4 py-2 rounded-xl ${
                   checkboxOptions[option.value]
                     ? "bg-blue-500 text-white"
                     : "bg-gray-200 text-gray-700 hover:bg-gray-300"
@@ -341,7 +341,7 @@ const AdForm = () => {
             ))}
           </div>
 
-          <label className="block mb-2 font-semibold">
+          <label className="block mb-2 mt-2 font-semibold">
             Сумма{" "}
             {transactionType === "Куплю"
               ? "покупки"
@@ -353,7 +353,7 @@ const AdForm = () => {
             type="number"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
-            className="block w-full mb-4 p-2 border rounded"
+            className="block w-full mb-4 p-2 border rounded-xl"
           />
 
           <div className="my-4">
@@ -368,7 +368,7 @@ const AdForm = () => {
                 <button
                   key={option.value}
                   onClick={() => setRateOption(option.value)}
-                  className={`px-4 py-2 rounded-lg ${
+                  className={`px-4 py-2 rounded-xl ${
                     rateOption === option.value
                       ? "bg-blue-500 text-white"
                       : "bg-gray-200 text-gray-700 hover:bg-gray-300"
@@ -382,7 +382,7 @@ const AdForm = () => {
 
           {/* Поле для указания курса (отображается, если выбрано "указать курс") */}
           {rateOption === "customRate" && (
-            <div className="my-4 p-4 border-2 border-blue-500 bg-blue-100 rounded-lg">
+            <div className="my-4 p-4 border-2 border-blue-500 bg-blue-100 rounded-xl">
               <label className="block text-blue-700 font-bold mb-2">
                 Цена за единицу (курс валют)
               </label>
@@ -396,7 +396,7 @@ const AdForm = () => {
                 value={pricePerUnit}
                 onChange={(e) => setPricePerUnit(e.target.value)}
                 // placeholder={exchangeRate?.toFixed(2) || "Загрузка..."}
-                className="block w-full mb-4 p-2 border rounded"
+                className="block w-full mb-4 p-2 border rounded-xl"
               />
             </div>
           )}
@@ -408,7 +408,7 @@ const AdForm = () => {
                 key={city}
                 type="button"
                 onClick={() => handleCityCheckboxChange(city)}
-                className={`px-4 py-2 rounded-lg ${
+                className={`px-4 py-2 rounded-xl ${
                   cities.includes(city)
                     ? "bg-blue-500 text-white"
                     : "bg-gray-200 text-gray-700 hover:bg-gray-300"
@@ -426,7 +426,7 @@ const AdForm = () => {
                 key={method}
                 type="button"
                 onClick={() => handleExchangeMethodChange(method)}
-                className={`px-4 py-2 rounded-lg ${
+                className={`px-4 py-2 rounded-xl ${
                   exchangeMethod.includes(method)
                     ? "bg-blue-500 text-white"
                     : "bg-gray-200 text-gray-700 hover:bg-gray-300"
@@ -438,11 +438,11 @@ const AdForm = () => {
           </div>
 
           <label className="block mt-2 font-semibold">Доставка</label>
-          <div className="flex flex-wrap gap-2 mt-1">
+          <div className="flex flex-wrap gap-2 mt-1 mb-4">
             <button
               type="button"
               onClick={() => setDelivery("none")}
-              className={`px-4 py-2 rounded-lg ${
+              className={`px-4 py-2 rounded-xl ${
                 delivery === "none"
                   ? "bg-blue-500 text-white"
                   : "bg-gray-200 text-gray-700 hover:bg-gray-300"
@@ -453,7 +453,7 @@ const AdForm = () => {
             <button
               type="button"
               onClick={() => setDelivery("free")}
-              className={`px-4 py-2 rounded-lg ${
+              className={`px-4 py-2 rounded-xl ${
                 delivery === "free"
                   ? "bg-blue-500 text-white"
                   : "bg-gray-200 text-gray-700 hover:bg-gray-300"
@@ -464,7 +464,7 @@ const AdForm = () => {
             <button
               type="button"
               onClick={() => setDelivery("")}
-              className={`px-4 py-2 rounded-lg ${
+              className={`px-4 py-2 rounded-xl ${
                 delivery !== "free" && delivery !== "none"
                   ? "bg-blue-500 text-white"
                   : "bg-gray-200 text-gray-700 hover:bg-gray-300"
@@ -478,29 +478,30 @@ const AdForm = () => {
                 placeholder="Сумма"
                 value={delivery}
                 onChange={(e) => setDelivery(e.target.value)}
-                className="mt-2 p-2 border rounded w-full"
+                className="mt-2 p-2 border rounded-xl w-full"
               />
             )}
           </div>
 
-          <label className="block mt-2 font-semibold">Комментарий</label>
+          <label className="block mb-2 font-semibold">
+            Комментарий</label>
           <textarea
             value={comment}
             ref={commentRef}
             onFocus={handleFocus}
             onBlur={handleBlur}
             onChange={(e) => setComment(e.target.value)}
-            className="block w-full mb-4 p-2 border rounded"
+            className="block w-full mb-4 p-2 border rounded-xl"
             placeholder="Подъеду в любое удобное для вас место"
           ></textarea>
 
           <button
             onClick={handleGenerateMessage}
-            className="w-full mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 relative"
+            className="w-full mt-4 px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 relative"
           >
             Сгенерировать сообщение
             {showTooltip && (
-              <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-base px-3 py-1 rounded shadow-lg">
+              <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-base px-3 py-1 rounded-xl shadow-lg">
                 Проверьте сообщение, скопируйте и вставьте в группу телеграмм
               </div>
             )}
@@ -510,18 +511,18 @@ const AdForm = () => {
           {generatedMessage && (
             <div className="mt-4" ref={previewRef}>
               <h3 className="font-bold mb-2">Предпросмотр сообщения</h3>
-              <div className="p-3 bg-gray-100 rounded border">
+              <div className="p-3 bg-gray-100 rounded-xl border">
                 <pre className="whitespace-pre-wrap">{generatedMessage}</pre>
               </div>
               <div className="relative mt-4">
                 {showCopyHint && (
-                  <div className="absolute text-3xl left-1/2 transform -translate-x-1/2 -top-7 text-sm text-gray-600 animate-bounce-down">
+                  <div className="absolute left-1/2 transform -translate-x-1/2 -top-4 text-sm text-gray-600 animate-bounce-down" style={{fontSize: "35px"}}>
                     👇
                   </div>
                 )}
                 <button
                   onClick={handleCopyToClipboard}
-                  className={`w-full mt-2 px-4 py-2 text-white rounded ${
+                  className={`w-full mt-2 px-4 py-2 text-white rounded-xl ${
                     highlightCopyButton ? "bg-green-400" : "bg-green-500"
                   } hover:bg-green-600`}
                 >
