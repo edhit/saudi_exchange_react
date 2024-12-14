@@ -1,22 +1,24 @@
-import React, { useState, useEffect, useRef } from "react";
+// src/components/AdForm.js
+import React, { useEffect, useRef, useState } from "react";
+import CurrencyExchange from "./CurrencyExchange";
 import Notification from "./Notification";
 
-const TelegramStyleForm = () => {
+const AdForm = () => {
   const [greeting, setGreeting] = useState("");
-  const [formData, setFormData] = useState({
-    role: "Нужен водитель",
-    time: "",
-    timeOption: "",
-    date: "",
-    dateOption: "",
-    from: "",
-    to: "",
-    seats: "",
-    comment: "",
-  });
+  const [transactionType, setTransactionType] = useState("Куплю");
+  const [sellCurrency, setSellCurrency] = useState("sar");
+  const [buyCurrency, setBuyCurrency] = useState("rub");
+  const [amount, setAmount] = useState("");
+  const [rateOption, setRateOption] = useState("noRate");
+  const [pricePerUnit, setPricePerUnit] = useState("");
+  const [, setExchangeRate] = useState(null);
+  const [cities, setCities] = useState([]);
+  const [comment, setComment] = useState("");
+  const [exchangeMethod, setExchangeMethod] = useState([]);
+  const [delivery, setDelivery] = useState("none");
+  const [checkboxOptions, setCheckboxOptions] = useState([]); // Состояние для чекбоксов
 
-  const [customCity, setCustomCity] = useState({ from: false, to: false });
-
+  const [isUrgent, setIsUrgent] = useState(false); // Состояние для кнопки "СРОЧНО"
   const [generatedMessage, setGeneratedMessage] = useState("");
   const [showNotification, setShowNotification] = useState(false); // копия во все проекты
   const [showTooltip, setShowTooltip] = useState(false); // подсказка
@@ -26,12 +28,6 @@ const TelegramStyleForm = () => {
   const commentRef = useRef(null);
   const [paddingBottom, setPaddingBottom] = useState(0);
 
-  const [showTimeInput, setShowTimeInput] = useState(false);
-  const [showDateInput, setShowDateInput] = useState(false);
-
-  const cities = ["Медина", "Мекка", "Джидда", "Эр-Рияд"];
-  const roles = ["Нужен водитель", "Возьму пассажира(ов)"];
-
   useEffect(() => {
     // Очистка стилей при размонтировании компонента
     return () => {
@@ -39,72 +35,95 @@ const TelegramStyleForm = () => {
     };
   }, []);
 
-  const handleButtonClick = (field, value) => {
-    setFormData({ ...formData, [field]: value });
-    if (field === "from" || field === "to") {
-      setCustomCity({ ...customCity, [field]: value === "" }); // Показать поле ввода, если "Другой"
-    }
+  const handleRateChange = (rate) => {
+    setExchangeRate(rate);
   };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+  const handleCityCheckboxChange = (city) => {
+    setCities((prevCities) => {
+      if (prevCities.includes(city)) {
+        return prevCities.filter((c) => c !== city);
+      } else {
+        return [...prevCities, city];
+      }
+    });
+  };
+
+  const handleExchangeMethodChange = (method) => {
+    setExchangeMethod((prev) => {
+      if (prev.includes(method)) {
+        return prev.filter((m) => m !== method);
+      } else {
+        return [...prev, method];
+      }
+    });
   };
 
   const handleGenerateMessage = () => {
     const messageParts = [];
 
-    // // Добавляем приветствие, если выбрано
+    // Добавляем приветствие, если выбрано
     if (greeting) {
       messageParts.push(greeting);
     }
 
-    // Добавляем поля только если они не пустые
-    if (formData.role) {
-      let icon =
-        formData.role === "Нужен водитель"
-          ? "🚘"
-          : formData.role === "Возьму пассажира(ов)"
-          ? "🚘"
-          : "🧳";
+    if (sellCurrency && buyCurrency) {
+      const amountPart = amount ? `${amount} ` : "";
+      const currencies = Object.keys(checkboxOptions);
+      let text = ''
+      for (let index = 0; index < currencies.length; index++) {
+        if (index === 0)
+          text = `${currencies[index].toUpperCase()}`;
+        else 
+          text = `${text}, ${currencies[index].toUpperCase()}`;
+      }
 
-      messageParts.push(`${icon} ${formData.role}`);
+      if (transactionType === "Продам") {
+        messageParts.push(
+          `Продам ${amountPart}${sellCurrency.toUpperCase()} за ${text}`
+        );
+      } else if (transactionType === "Куплю") {
+        messageParts.push(
+          `Куплю ${amountPart}${sellCurrency.toUpperCase()} за ${text}`
+        );
+      } else if (transactionType === "Меняю") {
+        messageParts.push(
+          `Меняю ${amountPart}${sellCurrency.toUpperCase()} на ${text}`
+        );
+      }
     }
 
-    if (formData.date) {
-      messageParts.push(`📅 ${formData.date}`);
+    if (cities.length > 0) {
+      messageParts.push(`📍 ${cities.join(", ")}`);
     }
 
-    if (formData.time) {
-      messageParts.push(`🕓 ${formData.time}`);
+    if (rateOption === "customRate") {
+      if (pricePerUnit) {
+        messageParts.push(`💵 Курс: ${pricePerUnit}`);
+      }
+    } else if (rateOption === "googleRate") {
+      messageParts.push(`💵 Курс Google`);
+    } else if (rateOption === "messageMe") {
+      messageParts.push(`💵 За курсом в ЛС`);
     }
 
-    if (formData.from) {
-      messageParts.push(`📌 Откуда: ${formData.from}`);
+    if (exchangeMethod.length > 0) {
+      messageParts.push(`🔄 Способ обмена: ${exchangeMethod.join(", ")}`);
     }
 
-    if (formData.to) {
-      messageParts.push(`📍 Куда: ${formData.to}`);
+    if (delivery === "free") {
+      messageParts.push("🚚 Доставка: бесплатная");
+    } else if (delivery !== "none") {
+      messageParts.push(`🚚 Доставка: ${delivery} SAR`);
     }
 
-    if (formData.seats) {
-      let text =
-        formData.role === "Нужен водитель"
-          ? "Количество пассажиров"
-          : formData.role === "Возьму пассажира(ов)"
-          ? "Количество мест"
-          : "Вес";
-
-      let kg =
-        formData.role !== "Нужен водитель" &&
-        formData.role !== "Возьму пассажира(ов)"
-          ? "кг"
-          : "";
-      messageParts.push(`🔢 ${text}: ${formData.seats} ${kg}`);
+    if (comment) {
+      messageParts.push(comment);
     }
 
-    if (formData.comment) {
-      messageParts.push(`${formData.comment}`);
+    if (isUrgent) {
+      messageParts.push("");
+      messageParts.push("🚨 Срочно!!!");
     }
 
     const formattedMessage = messageParts.join("\n");
@@ -158,48 +177,59 @@ const TelegramStyleForm = () => {
     setPaddingBottom(0);
   };
 
-  const handleOptionClick = (option, type) => {
-    if (type === "time") {
-      setFormData((prevData) => ({
-        ...prevData,
-        timeOption: option,
-        time: option === "Указать время" ? "" : option, // Сброс времени, если "Указать время"
-      }));
-      setShowTimeInput(option === "Указать время");
-    } else if (type === "date") {
-      const today = new Date();
-      const tomorrow = new Date(today);
-      tomorrow.setDate(today.getDate() + 1);
-      const dayAfterTomorrow = new Date(today);
-      dayAfterTomorrow.setDate(today.getDate() + 2);
+  const toggleCheckbox = (option) => {  
+    setCheckboxOptions((prevState) => {
+      const updatedState = { ...prevState, [option]: !prevState[option] };
 
-      let dateValue = "";
-      if (option === "Сегодня") dateValue = today.toISOString().slice(0, 10);
-      if (option === "Завтра") dateValue = tomorrow.toISOString().slice(0, 10);
-      if (option === "Послезавтра")
-        dateValue = dayAfterTomorrow.toISOString().slice(0, 10);
+      // Удаляем из объекта те опции, которые стали "неактивными"
+      if (!updatedState[option]) {
+        delete updatedState[option];
+      }
 
-      setFormData((prevData) => ({
-        ...prevData,
-        dateOption: option,
-        date: option === "Указать дату" ? "" : dateValue,
-      }));
-      setShowDateInput(option === "Указать дату");
-    }
+      if (updatedState[option]) {
+        setBuyCurrency(option);
+      }
+
+      return updatedState;
+    });
+
+    return checkboxOptions;
+  };
+
+  // Функция для переключения "СРОЧНО ОБЪЯВЛЕНИЕ"
+  const handleUrgentToggle = () => {
+    setIsUrgent((prev) => !prev);
   };
 
   return (
     <div class="container mx-auto">
       <div style={{ paddingBottom: `${paddingBottom}px` }}>
-        <div className="max-w-md mx-auto bg-white rounded-xl mb-4">
-          <h1 className="block bg-gray-100 p-4 text-xl border border-b-1 text-center font-bold mb-1">
-            🇸🇦 Попутка в Саудии
-          </h1>
-        </div>
+      <div className="max-w-md mx-auto bg-white rounded-xl mb-4">
 
+      <h1 className="block bg-gray-100 p-4 text-xl border border-b-1 text-center font-bold mb-1">
+      🇸🇦 Обмен валюты в Саудии
+      </h1>
+          </div>
+        
         <div className="p-4 pt-0 max-w-md mx-auto bg-white rounded-xl">
-          {/* Чекбоксы для приветствия */}
+
+          {/* Чекбокс "СРОЧНО ОБЪЯВЛЕНИЕ" */}
           <div className="mb-4">
+            <button
+              type="button"
+              onClick={handleUrgentToggle}
+              className={`px-4 py-2 rounded-xl w-full ${
+                isUrgent
+                  ? "bg-red-500 text-white"
+                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              }`}
+            >
+              🚨 СРОЧНОЕ ОБЪЯВЛЕНИЕ
+            </button>
+          </div>
+
+          {/* Чекбоксы для приветствия */}
+          <div className="mb-6">
             <label className="block mb-2 font-semibold">Приветствие</label>
             <div className="flex flex-wrap gap-2">
               {[
@@ -213,7 +243,7 @@ const TelegramStyleForm = () => {
                 <button
                   key={option.value}
                   onClick={() => setGreeting(option.value)}
-                  className={`px-3 py-2 rounded-xl ${
+                  className={`px-4 py-2 rounded-xl ${
                     greeting === option.value
                       ? "bg-blue-500 text-white"
                       : "bg-gray-200 text-gray-700 hover:bg-gray-300"
@@ -225,239 +255,253 @@ const TelegramStyleForm = () => {
             </div>
           </div>
 
-          {/* Role Selection */}
-          <div className="mb-4">
-            {/* <label className="block mb-2 font-semibold">Роль</label> */}
-            <div className="flex flex-wrap gap-2">
-              {roles.map((role) => (
-                <button
-                  key={role}
-                  type="button"
-                  onClick={() => handleButtonClick("role", role)}
-                  className={`block px-3 py-2 text-xl rounded-xl cursor-pointer w-full text-center ${
-                    formData.role === role
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-200 text-gray-700"
+          {/* Радиокнопки для выбора типа сделки */}
+          <div className="flex space-x-2 mb-6">
+            {["Куплю", "Продам"].map((type) => (
+              <label key={type} className="flex-1">
+                <input
+                  type="radio"
+                  value={type}
+                  checked={transactionType === type}
+                  onChange={() => setTransactionType(type)}
+                  className="hidden"
+                />
+                <span
+                  className={`block px-6 py-3 text-xl rounded-xl cursor-pointer w-full text-center ${
+                    transactionType === type
+                      ? type === "Продам"
+                        ? "bg-red-500 text-white"
+                        : type === "Куплю"
+                        ? "bg-green-500 text-white"
+                        : "bg-blue-500 text-white"
+                      : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                   }`}
                 >
-                  {role}
-                </button>
-              ))}
-            </div>
+                  {type}
+                </span>
+              </label>
+            ))}
           </div>
 
-          {/* Date */}
-          <div className="mb-4">
-            {/* Выбор даты */}
-            <div className="mb-4">
-              <label className="block mb-2 font-semibold">Дата:</label>
-
-              {/* Кнопки для выбора даты */}
-              <div className="flex flex-wrap gap-2 mb-4">
-                {["Сегодня", "Завтра", "Послезавтра", "Указать дату"].map(
-                  (option) => (
-                    <button
-                      key={option}
-                      type="button"
-                      className={`px-3 py-2 rounded-xl ${
-                        formData.dateOption === option
-                          ? "bg-blue-500 text-white"
-                          : "bg-gray-200 text-gray-700"
-                      }`}
-                      onClick={() => handleOptionClick(option, "date")}
-                    >
-                      {option}
-                    </button>
-                  )
-                )}
+          <div className="flex items-center mb-4">
+            <div className="flex-1">
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { label: "USD", value: "usd" },
+                  { label: "USDT", value: "usdt" },
+                  { label: "EUR", value: "eur" },
+                  { label: "RUB", value: "rub" },
+                  { label: "KZT", value: "kzt" },
+                  { label: "UZS", value: "uzs" },
+                  { label: "SAR", value: "sar" },
+                ].map((option) => (
+                  <button
+                    key={option.value}
+                    onClick={() => setSellCurrency(option.value)}
+                    className={`px-4 py-2 rounded-xl ${
+                      sellCurrency === option.value
+                        ? "bg-blue-500 text-white"
+                        : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                    }`}
+                  >
+                    {option.label}
+                  </button>
+                ))}
               </div>
-
-              {/* Поле ввода даты */}
-              {showDateInput && (
-                <input
-                  type="date"
-                  name="date"
-                  value={formData.date}
-                  min={new Date().toJSON().slice(0, 10)}
-                  onChange={handleInputChange}
-                  className="w-full p-2 border rounded-xl"
-                />
-              )}
             </div>
           </div>
-          {/* Выбор времени */}
-          <div className="mb-4">
-            <label className="block mb-2 font-semibold">Время:</label>
 
-            {/* Кнопки для выбора времени */}
-            <div className="flex flex-wrap gap-2 mb-4">
+          <div class="relative flex items-center mb-2">
+            <div class="flex-grow border-t border-gray-300"></div>
+            <span class="mx-4 text-gray-500">за</span>
+            <div class="flex-grow border-t border-gray-300"></div>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            {[
+              { label: "USD", value: "usd" },
+              { label: "USDT", value: "usdt" },
+              { label: "EUR", value: "eur" },
+              { label: "RUB", value: "rub" },
+              { label: "KZT", value: "kzt" },
+              { label: "UZS", value: "uzs" },
+              { label: "SAR", value: "sar" },
+            ].map((option) => (
+              <button
+                key={option.value}
+                onClick={() => toggleCheckbox(option.value)}
+                className={`px-4 py-2 rounded-xl ${
+                  checkboxOptions[option.value]
+                    ? "bg-blue-500 text-white"
+                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+
+          <label className="block mb-2 mt-2 font-semibold">
+            Сумма{" "}
+            {transactionType === "Куплю"
+              ? "покупки"
+              : transactionType === "Продам"
+              ? "продажи"
+              : "обмена"}
+          </label>
+          <input
+            type="number"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            className="block w-full mb-4 p-2 border rounded-xl"
+          />
+
+          <div className="my-4">
+            <label className="block mb-2 font-semibold">Курс</label>
+            <div className="flex flex-wrap gap-2">
               {[
-                "Сейчас",
-                "После Фаджра",
-                "После Зухра",
-                "После Асра",
-                "После Магриба",
-                "После Иша",
-                "Указать время",
+                { label: "Не указывать курс", value: "noRate" },
+                { label: "Указать курс", value: "customRate" },
+                { label: "Курс Google", value: "googleRate" },
+                { label: "За курсом в ЛС", value: "messageMe" },
               ].map((option) => (
                 <button
-                  key={option}
-                  type="button"
-                  className={`px-3 py-2 rounded-xl ${
-                    formData.timeOption === option
+                  key={option.value}
+                  onClick={() => setRateOption(option.value)}
+                  className={`px-4 py-2 rounded-xl ${
+                    rateOption === option.value
                       ? "bg-blue-500 text-white"
-                      : "bg-gray-200 text-gray-700"
+                      : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                   }`}
-                  onClick={() => handleOptionClick(option, "time")}
                 >
-                  {option}
+                  {option.label}
                 </button>
               ))}
             </div>
-
-            {/* Поле ввода времени */}
-            {showTimeInput && (
-              <input
-                type="time"
-                name="time"
-                value={formData.time}
-                onChange={handleInputChange}
-                className="w-full p-2 border rounded-xl"
-              />
-            )}
           </div>
 
-          {/* From */}
-          <div className="mb-4">
-            <label className="block mb-2 font-semibold">Откуда</label>
-            <div className="flex gap-2 flex-wrap">
-              {cities.map((city) => (
-                <button
-                  key={city}
-                  type="button"
-                  onClick={() => handleButtonClick("from", city)}
-                  className={`px-3 py-2 rounded-xl ${
-                    formData.from === city
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-200 text-gray-700"
-                  }`}
-                >
-                  {city}
-                </button>
-              ))}
+          {/* Поле для указания курса (отображается, если выбрано "указать курс") */}
+          {rateOption === "customRate" && (
+            <div className="my-4 p-4 border-2 border-blue-500 bg-blue-100 rounded-xl">
+              <label className="block text-blue-700 font-bold mb-2">
+                Цена за единицу (курс валют)
+              </label>
+              <CurrencyExchange
+                sellCurrency={sellCurrency}
+                buyCurrency={buyCurrency}
+                onRateChange={handleRateChange}
+              />
+              <input
+                type="number"
+                value={pricePerUnit}
+                onChange={(e) => setPricePerUnit(e.target.value)}
+                // placeholder={exchangeRate?.toFixed(2) || "Загрузка..."}
+                className="block w-full mb-4 p-2 border rounded-xl"
+              />
+            </div>
+          )}
+
+          <label className="block mb-2 font-semibold">Город</label>
+          <div className="flex flex-wrap gap-2 mb-4">
+            {["Медина", "Мекка", "Джидда", "Эр-Рияд"].map((city) => (
               <button
+                key={city}
                 type="button"
-                onClick={() => handleButtonClick("from", "")}
-                className={`px-3 py-2 rounded-xl ${
-                  customCity.from
+                onClick={() => handleCityCheckboxChange(city)}
+                className={`px-4 py-2 rounded-xl ${
+                  cities.includes(city)
                     ? "bg-blue-500 text-white"
-                    : "bg-gray-200 text-gray-700"
+                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                 }`}
               >
-                Другой город
+                {city}
               </button>
-            </div>
-            {customCity.from && (
-              <input
-                type="text"
-                name="from"
-                placeholder="Введите город"
-                value={formData.from}
-                onChange={handleInputChange}
-                className="mt-2 w-full p-2 border rounded-xl"
-              />
-            )}
+            ))}
           </div>
 
-          {/* To */}
-          <div className="mb-4">
-            <label className="block mb-2 font-semibold">Куда</label>
-            <div className="flex gap-2 flex-wrap">
-              {cities.map((city) => (
-                <button
-                  key={city}
-                  type="button"
-                  onClick={() => handleButtonClick("to", city)}
-                  className={`px-3 py-2 rounded-xl ${
-                    formData.to === city
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-200 text-gray-700"
-                  }`}
-                >
-                  {city}
-                </button>
-              ))}
+          <label className="block mb-2 font-semibold">Способ обмена</label>
+          <div className="flex gap-2 mb-4">
+            {["Перевод", "Наличка"].map((method) => (
               <button
+                key={method}
                 type="button"
-                onClick={() => handleButtonClick("to", "")}
-                className={`px-3 py-2 rounded-xl ${
-                  customCity.to
+                onClick={() => handleExchangeMethodChange(method)}
+                className={`px-4 py-2 rounded-xl ${
+                  exchangeMethod.includes(method)
                     ? "bg-blue-500 text-white"
-                    : "bg-gray-200 text-gray-700"
+                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                 }`}
               >
-                Другой город
+                {method}
               </button>
-            </div>
-            {customCity.to && (
+            ))}
+          </div>
+
+          <label className="block mt-2 font-semibold">Доставка</label>
+          <div className="flex flex-wrap gap-2 mt-1 mb-4">
+            <button
+              type="button"
+              onClick={() => setDelivery("none")}
+              className={`px-4 py-2 rounded-xl ${
+                delivery === "none"
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              }`}
+            >
+              Без доставки
+            </button>
+            <button
+              type="button"
+              onClick={() => setDelivery("free")}
+              className={`px-4 py-2 rounded-xl ${
+                delivery === "free"
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              }`}
+            >
+              Бесплатная
+            </button>
+            <button
+              type="button"
+              onClick={() => setDelivery("")}
+              className={`px-4 py-2 rounded-xl ${
+                delivery !== "free" && delivery !== "none"
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              }`}
+            >
+              Указать сумму (SAR)
+            </button>
+            {delivery !== "free" && delivery !== "none" && (
               <input
-                type="text"
-                name="to"
-                placeholder="Введите город"
-                value={formData.to}
-                onChange={handleInputChange}
-                className="mt-2 w-full p-2 border rounded-xl"
+                type="number"
+                placeholder="Сумма"
+                value={delivery}
+                onChange={(e) => setDelivery(e.target.value)}
+                className="mt-2 p-2 border rounded-xl w-full"
               />
             )}
           </div>
 
-          {/* Seats */}
-          <div className="mb-4">
-            <label className="block mb-2 font-semibold">
-              {formData.role === "Нужен водитель"
-                ? "Количество пассажиров"
-                : formData.role === "Возьму пассажира(ов)"
-                ? "Количество мест"
-                : "Вес (кг.)"}
-            </label>
-            <input
-              type="number"
-              name="seats"
-              value={formData.seats}
-              onChange={handleInputChange}
-              className="w-full p-2 border rounded-xl"
-            />
-          </div>
+          <label className="block mb-2 font-semibold">
+            Комментарий</label>
+          <textarea
+            value={comment}
+            ref={commentRef}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
+            onChange={(e) => setComment(e.target.value)}
+            className="block w-full mb-4 p-2 border rounded-xl"
+            placeholder="Подъеду в любое удобное для вас место"
+          ></textarea>
 
-          {/* Comment */}
-          <div className="mb-4">
-            <label className="block mb-2 font-semibold">Комментарий</label>
-            <textarea
-              name="comment"
-              value={formData.comment}
-              onChange={handleInputChange}
-              ref={commentRef}
-              onFocus={handleFocus}
-              onBlur={handleBlur}
-              className="block w-full mb-4 p-2 border rounded-xl"
-              placeholder={
-                formData.role === "Нужен водитель"
-                  ? "Есть багаж"
-                  : formData.role === "Возьму пассажира(ов)"
-                  ? "Возьму посылку, 10 кг. свободно"
-                  : "Вес (кг.)"
-              }
-            ></textarea>
-          </div>
-
-          {/* Submit */}
           <button
             onClick={handleGenerateMessage}
-            className="w-full mt-4 px-3 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 relative"
+            className="w-full mt-4 px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 relative"
           >
             Сгенерировать сообщение
             {showTooltip && (
-              <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-gray-700 text-white text-base px-3 py-1 rounded-xl shadow-lg">
+              <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-base px-3 py-1 rounded-xl shadow-lg">
                 Проверьте сообщение, скопируйте и вставьте в группу телеграмм
               </div>
             )}
@@ -472,16 +516,13 @@ const TelegramStyleForm = () => {
               </div>
               <div className="relative mt-4">
                 {showCopyHint && (
-                  <div
-                    className="absolute left-1/2 transform -translate-x-1/2 -top-4 text-sm text-gray-600 animate-bounce-down"
-                    style={{ fontSize: "35px" }}
-                  >
+                  <div className="absolute left-1/2 transform -translate-x-1/2 -top-4 text-sm text-gray-600 animate-bounce-down" style={{fontSize: "35px"}}>
                     👇
                   </div>
                 )}
                 <button
                   onClick={handleCopyToClipboard}
-                  className={`w-full mt-2 px-3 py-2 text-white rounded-xl ${
+                  className={`w-full mt-2 px-4 py-2 text-white rounded-xl ${
                     highlightCopyButton ? "bg-green-400" : "bg-green-500"
                   } hover:bg-green-600`}
                 >
@@ -503,4 +544,4 @@ const TelegramStyleForm = () => {
   );
 };
 
-export default TelegramStyleForm;
+export default AdForm;
